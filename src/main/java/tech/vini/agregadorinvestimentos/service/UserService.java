@@ -5,6 +5,7 @@ import tech.vini.agregadorinvestimentos.dto.user.CreateUserDto;
 import tech.vini.agregadorinvestimentos.entity.User;
 import tech.vini.agregadorinvestimentos.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,5 +33,9 @@ public class UserService {
 
     public Optional<User> getUserById(String userId){
         return userRepository.findById(UUID.fromString(userId));
+    }
+
+    public List<User> listUsers(){
+        return userRepository.findAll();
     }
 }

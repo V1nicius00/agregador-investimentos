@@ -31,4 +31,9 @@ public class UserController {
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
     
+    @GetMapping
+    public ResponseEntity<List<User>> listUsers(){
+        var users = userService.listUsers();
+        return ResponseEntity.ok(users);
+    }
 }
