@@ -30,10 +30,16 @@ public class UserController {
         var user = userService.getUserById(userId);
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-    
+
     @GetMapping
     public ResponseEntity<List<User>> listUsers(){
         var users = userService.listUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUserById(@PathVariable("userId") String userId){
+        userService.deleteUserById(userId);
+        return ResponseEntity.noContent().build();
     }
 }
