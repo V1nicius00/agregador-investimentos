@@ -2,6 +2,7 @@ package tech.vini.agregadorinvestimentos.service;
 
 import org.springframework.stereotype.Service;
 import tech.vini.agregadorinvestimentos.dto.user.CreateUserDto;
+import tech.vini.agregadorinvestimentos.dto.user.UpdateUserDto;
 import tech.vini.agregadorinvestimentos.entity.User;
 import tech.vini.agregadorinvestimentos.repository.UserRepository;
 
@@ -37,6 +38,24 @@ public class UserService {
 
     public List<User> listUsers(){
         return userRepository.findAll();
+    }
+
+    public void updateUserById(String userId,
+                               UpdateUserDto updateUserDto){
+
+        var id = UUID.fromString(userId);
+        var userEntity = userRepository.findById(id);
+
+        if(userEntity.isPresent()){
+            var user = userEntity.get();
+            if(updateUserDto.username() != null){
+                user.setUsername(updateUserDto.username());
+            }
+            if(updateUserDto.password() != null){
+                user.setPassword(updateUserDto.password());
+            }
+            userRepository.save(user);
+        }
     }
 
     public void deleteUserById(String userId){

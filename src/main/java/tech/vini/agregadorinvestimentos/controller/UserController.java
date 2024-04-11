@@ -3,6 +3,7 @@ package tech.vini.agregadorinvestimentos.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.vini.agregadorinvestimentos.dto.user.CreateUserDto;
+import tech.vini.agregadorinvestimentos.dto.user.UpdateUserDto;
 import tech.vini.agregadorinvestimentos.entity.User;
 import tech.vini.agregadorinvestimentos.service.UserService;
 
@@ -35,6 +36,13 @@ public class UserController {
     public ResponseEntity<List<User>> listUsers(){
         var users = userService.listUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<Void> updateUserById(@PathVariable("userId") String userId,
+                                               @RequestBody UpdateUserDto updateUserDto){
+        userService.updateUserById(userId, updateUserDto);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{userId}")
