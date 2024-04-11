@@ -5,6 +5,7 @@ import tech.vini.agregadorinvestimentos.dto.user.CreateUserDto;
 import tech.vini.agregadorinvestimentos.entity.User;
 import tech.vini.agregadorinvestimentos.repository.UserRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,7 +27,10 @@ public class UserService {
                 null);
 
         var userSaved = userRepository.save(entity);
-
         return userSaved.getUserId();
+    }
+
+    public Optional<User> getUserById(String userId){
+        return userRepository.findById(UUID.fromString(userId));
     }
 }
