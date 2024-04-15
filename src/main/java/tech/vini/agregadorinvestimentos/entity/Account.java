@@ -21,6 +21,10 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID accountId;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Column(name = "description")
     private String description;
 }
