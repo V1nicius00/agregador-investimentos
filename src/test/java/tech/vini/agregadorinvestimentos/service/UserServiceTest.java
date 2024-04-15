@@ -14,6 +14,7 @@ import tech.vini.agregadorinvestimentos.entity.User;
 import tech.vini.agregadorinvestimentos.repository.UserRepository;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,11 +33,13 @@ class UserServiceTest {
 
     @Captor
     private ArgumentCaptor<User> userArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<UUID> uuidUserArgumentCaptor;
     @Nested
     class createUser{
 
         @Test
-        @DisplayName("Should Create a user with success")
+        @DisplayName("Should create a user with success")
         void shouldCreateAUserWithSuccess() {
             //Arrange
             var user = new User(
@@ -47,7 +50,9 @@ class UserServiceTest {
                     Instant.now(),
                     null
             );
-            doReturn(user).when(userRepository).save(userArgumentCaptor.capture());
+            doReturn(user)
+                    .when(userRepository)
+                    .save(userArgumentCaptor.capture());
             var input = new CreateUserDto(
                     "username",
                     "email@email.com",
@@ -70,7 +75,9 @@ class UserServiceTest {
         @DisplayName("Should throw exception when error occurs")
         void shouldThrowExceptionWhenErrorOccurs() {
             //Arrange
-            doThrow(new RuntimeException()).when(userRepository).save(any());
+            doThrow(new RuntimeException())
+                    .when(userRepository)
+                    .save(any());
             var input = new CreateUserDto(
                     "username",
                     "email@email.com",
@@ -78,6 +85,51 @@ class UserServiceTest {
             );
             //Act & Assert
             assertThrows(RuntimeException.class, () ->userService.createUser(input));
+        }
+    }
+
+    @Nested
+    class getUserById{
+
+        @Test
+        @DisplayName("Should get user by id with success when optional is present")
+        void shouldGetUserByIdWithSuccessWhenOptionalIsPresent() {
+            // Arrange
+            var user = new User(
+                    UUID.randomUUID(),
+                    "username",
+                    "email@email.com",
+                    "password",
+                    Instant.now(),
+                    null
+            );
+            doReturn(Optional.of(user))
+                    .when(userRepository)
+                    .findById(uuidUserArgumentCaptor.capture());
+
+            //Act
+            var output = userService.getUserById(user.getUserId().toString());
+
+            //Assert
+            assertTrue(output.isPresent());
+            assertEquals(user.getUserId(), uuidUserArgumentCaptor.getValue());
+        }
+
+        @Test
+        @DisplayName("Should get user by id with success when optional is empty")
+        void shouldGetUserByIdWithSuccessWhenOptionalIsEmpty() {
+            // Arrange
+            var userId = UUID.randomUUID();
+            doReturn(Optional.empty())
+                    .when(userRepository)
+                    .findById(uuidUserArgumentCaptor.capture());
+
+            //Act
+            var output = userService.getUserById(userId.toString());
+
+            //Assert
+            assertTrue(output.isEmpty());
+            assertEquals(userId, uuidUserArgumentCaptor.getValue());
         }
     }
 }
