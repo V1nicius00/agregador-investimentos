@@ -14,6 +14,7 @@ import tech.vini.agregadorinvestimentos.entity.User;
 import tech.vini.agregadorinvestimentos.repository.UserRepository;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,7 +37,7 @@ class UserServiceTest {
     @Captor
     private ArgumentCaptor<UUID> uuidUserArgumentCaptor;
     @Nested
-    class createUser{
+    class createUser {
 
         @Test
         @DisplayName("Should create a user with success")
@@ -89,7 +90,7 @@ class UserServiceTest {
     }
 
     @Nested
-    class getUserById{
+    class getUserById {
 
         @Test
         @DisplayName("Should get user by id with success when optional is present")
@@ -130,6 +131,35 @@ class UserServiceTest {
             //Assert
             assertTrue(output.isEmpty());
             assertEquals(userId, uuidUserArgumentCaptor.getValue());
+        }
+    }
+
+    @Nested
+    class listUsers {
+
+        @Test
+        @DisplayName("Should return all users with success")
+        void shouldReturnAllUsersWithSuccess() {
+
+            // Arrange
+            var user = new User(
+                    UUID.randomUUID(),
+                    "username",
+                    "email@email.com",
+                    "password",
+                    Instant.now(),
+                    null
+            );
+            var userList = List.of(user);
+            doReturn(userList)
+                    .when(userRepository)
+                    .findAll();
+            // Act
+            var output = userService.listUsers();
+
+            // Assert
+            assertNotNull(output);
+            assertEquals(userList.size(), output.size());
         }
     }
 }
