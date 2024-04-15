@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tech.vini.agregadorinvestimentos.dto.user.CreateUserDto;
+import tech.vini.agregadorinvestimentos.dto.user.UpdateUserDto;
 import tech.vini.agregadorinvestimentos.entity.User;
 import tech.vini.agregadorinvestimentos.repository.UserRepository;
 
@@ -20,8 +21,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -162,4 +162,51 @@ class UserServiceTest {
             assertEquals(userList.size(), output.size());
         }
     }
+
+    @Nested
+    class deleteUserById {
+
+        @Test
+        @DisplayName("Should delete user by id with success when user exists")
+        void shouldDeleteUserByIdWithSuccessWhenUserExists() {
+            // Arrange
+            doReturn(true)
+                    .when(userRepository)
+                    .existsById(uuidUserArgumentCaptor.capture());
+
+            doNothing()
+                    .when(userRepository)
+                    .deleteById(uuidUserArgumentCaptor.capture());
+            var userId = UUID.randomUUID();
+            //Act
+            userService.deleteUserById(userId.toString());
+
+            //Assert
+            var idList = uuidUserArgumentCaptor.getAllValues();
+            assertEquals(userId, idList.get(0));
+            assertEquals(userId, idList.get(1));
+
+            verify(userRepository, times(1)).existsById(idList.get(0));
+            verify(userRepository, times(1)).deleteById(idList.get(1));
+        }
+
+        @Test
+        @DisplayName("Should not delete user when user not exists")
+        void shouldNotDeleteUserWhenUserNotExists() {
+            // Arrange
+            doReturn(false)
+                    .when(userRepository)
+                    .existsById(uuidUserArgumentCaptor.capture());
+            var userId = UUID.randomUUID();
+            //Act
+            userService.deleteUserById(userId.toString());
+
+            //Assert
+            assertEquals(userId, uuidUserArgumentCaptor.getValue());
+
+            verify(userRepository, times(1)).existsById(uuidUserArgumentCaptor.getValue());
+            verify(userRepository, times(0)).deleteById(any());
+        }
+    }
+    
 }
