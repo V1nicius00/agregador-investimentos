@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -31,4 +32,7 @@ public class Account {
 
     @Column(name = "description")
     private String description;
+
+    @OneToMany(mappedBy = "account")
+    private List<AccountStock> accountStocks;
 }
