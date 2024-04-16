@@ -2,6 +2,7 @@ package tech.vini.agregadorinvestimentos.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.vini.agregadorinvestimentos.dto.account.AccountResponseDto;
 import tech.vini.agregadorinvestimentos.dto.account.CreateAccountDto;
 import tech.vini.agregadorinvestimentos.dto.user.CreateUserDto;
 import tech.vini.agregadorinvestimentos.dto.user.UpdateUserDto;
@@ -57,5 +58,11 @@ public class UserController {
                                               @RequestBody CreateAccountDto createAccountDto){
         userService.createAccount(userId, createAccountDto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{userId}/accounts")
+    public ResponseEntity<List<AccountResponseDto>> listAccounts(@PathVariable("userId") String userId){
+        var accounts = userService.listAccounts(userId);
+        return ResponseEntity.ok(accounts);
     }
 }

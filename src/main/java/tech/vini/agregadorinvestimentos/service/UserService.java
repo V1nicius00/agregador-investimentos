@@ -3,6 +3,7 @@ package tech.vini.agregadorinvestimentos.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import tech.vini.agregadorinvestimentos.dto.account.AccountResponseDto;
 import tech.vini.agregadorinvestimentos.dto.account.CreateAccountDto;
 import tech.vini.agregadorinvestimentos.dto.user.CreateUserDto;
 import tech.vini.agregadorinvestimentos.dto.user.UpdateUserDto;
@@ -98,5 +99,15 @@ public class UserService {
         );
 
         billingAddressRepository.save(billingAddress);
+    }
+
+    public List<AccountResponseDto> listAccounts(String userId) {
+        var user = userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return user.getAccounts()
+                .stream()
+                .map(ac -> new AccountResponseDto(ac.getAccountId().toString(), ac.getDescription()))
+                .toList();
     }
 }
